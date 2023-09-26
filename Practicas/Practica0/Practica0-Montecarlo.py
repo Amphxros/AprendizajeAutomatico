@@ -16,3 +16,4 @@ class Montecarlo:
         X=np.random.random((numX,numY))
         print(X) 
         
+        
