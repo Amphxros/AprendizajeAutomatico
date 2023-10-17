@@ -3,12 +3,11 @@ import copy
 import math
 
 
+
+
 #########################################################################
 # Cost function
-#
-def compute_cost(x, y, w, b):
-    """
-    Computes the cost function for linear regression.
+ """Computes the cost function for linear regression.
 
     Args:
         x (ndarray): Shape (m,) Input to the model (Population of cities)
@@ -18,15 +17,20 @@ def compute_cost(x, y, w, b):
     Returns
         total_cost (float): The cost of using w,b as the parameters for linear regression
                to fit the data points in x and y
-    """
-
+"""
+def compute_cost(x, y, w, b):
+    total_cost=0
+    for i in range(len(x)):
+        J=((w + b*x[i]) - y[i]**i)**2
+        total_cost= total_cost + J
+    
+    
+    total_cost= (1/2*len(x))*total_cost
     return total_cost
 
 
 #########################################################################
 # Gradient function
-#
-def compute_gradient(x, y, w, b):
     """
     Computes the gradient for linear regression 
     Args:
@@ -37,17 +41,16 @@ def compute_gradient(x, y, w, b):
       dj_dw (scalar): The gradient of the cost w.r.t. the parameters w
       dj_db (scalar): The gradient of the cost w.r.t. the parameter b     
      """
-
+#
+def compute_gradient(x, y, w, b):
+    
     return dj_dw, dj_db
 
 
 #########################################################################
 # gradient descent
-#
-def gradient_descent(x, y, w_in, b_in, cost_function, gradient_function, alpha, num_iters):
-    """
-    Performs batch gradient descent to learn theta. Updates theta by taking 
-    num_iters gradient steps with learning rate alpha
+"""
+    Performs batch gradient descent to learn theta. Updates theta by taking num_iters gradient steps with learning rate alpha
 
     Args:
       x :    (ndarray): Shape (m,)
@@ -66,4 +69,15 @@ def gradient_descent(x, y, w_in, b_in, cost_function, gradient_function, alpha, 
           primarily for graphing later
     """
 
+#
+def gradient_descent(x, y, w_in, b_in, cost_function, gradient_function, alpha, num_iters):
+    theta=0
+    w=0
+    b=0
+    for i in range(num_iters):
+        w=cost_function(x,y,theta)
+        aux=gradient_function(x,y,theta,alpha)
+        theta=aux
+        
+    
     return w, b, J_history
