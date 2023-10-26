@@ -15,7 +15,11 @@ def zscore_normalize_features(X):
       mu (ndarray (n,))     : mean of each feature
       sigma (ndarray (n,))  : standard deviation of each feature
     """
+     mu = np.mean(X, axis=0)  # Compute the mean of eachfeature
+    sigma = np.std(X, axis=0)  # Compute the standard deviation of each feature
+    X_norm = (X - mu) / sigma  # Z-score normalization
 
+   
     return (X_norm, mu, sigma)
 
 
@@ -30,8 +34,10 @@ def compute_cost(X, y, w, b):
     Returns
       cost (scalar)    : cost
     """
-
-    return cost
+    m = len(y)  # Number of examples
+    y_pred = np.dot(X, w) + b  # Predicted values
+    cost = np.mean((y_pred - y) ** 2)  # M
+SE cos     return cost
 
 
 def compute_gradient(X, y, w, b):
@@ -46,6 +52,12 @@ def compute_gradient(X, y, w, b):
       dj_db : (scalar)             The gradient of the cost w.r.t. the parameter b. 
       dj_dw : (ndarray Shape (n,)) The gradient of the cost w.r.t. the parameters w. 
     """
+    m = len(y)  # Number of examples
+    y_pred = np.dot(X, w) + b  # Predicted values
+    error = y_pred - y  # Error between predicted and actual values
+
+    dj_db = np.mean(error)  # Gradient of the cost w.r.t. parameter b
+    dj_dw = (1/m) * np.dot(X.T, error)  # Gradient of the cost w.r.t. parameters w
 
     return dj_db, dj_dw
 
@@ -73,5 +85,14 @@ def gradient_descent(X, y, w_in, b_in, cost_function,
       J_history : (ndarray): Shape (num_iters,) J at each iteration,
           primarily for graphing later
     """
+    w = w_in
+    b = b_in
+    J_history = np.zeros(num_iters)
+
+    for i in range(num_iters):
+        dj_db, dj_dw = gradient_function(X, y, w, b)  # Compute gradients
+        w -= alpha * dj_dw  # Update parameters w
+        b -= alpha * dj_db  # Update parameter b
+        J_history[i] = cost_function(X, y, w, b)  # Compute and store the cost
 
     return w, b, J_history
