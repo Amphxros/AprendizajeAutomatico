@@ -40,7 +40,7 @@ def compute_cost(X, y, w, b, lambda_=None):
     h = sigmoid(z)  # Sigmoid function
 
     # Calculate the cost
-    cost = -1 / m * np.sum(y * np.log(h) + (1 - y) * np.log(1 - h))
+    total_cost = -1 / m * np.sum(y * np.log(h) + (1 - y) * np.log(1 - h))
 
     return total_cost
 
@@ -119,6 +119,16 @@ def compute_gradient_reg(X, y, w, b, lambda_=1):
       dj_dw: (ndarray Shape (n,)) The gradient of the cost w.r.t. the parameters w. 
 
     """
+    m = len(y)  # Number of training examples
+    z = np.dot(X, w) + b
+    h = sigmoid(z)  # Sigmoid function
+
+    # Calculate the gradient without regularization
+    dj_db = 1 / m * np.sum(h - y)
+    dj_dw = 1 / m * np.dot(X.T, (h - y))
+
+    # Add the regularization term (except for the bias term)
+    dj_dw[1:] += (lambda_ / m) * w[1:]
 
     return dj_db, dj_dw
 
@@ -150,6 +160,20 @@ def gradient_descent(X, y, w_in, b_in, cost_function, gradient_function, alpha, 
           primarily for graphing later
     """
 
+    m, n = X.shape
+    w = w_in.copy()
+    b = b_in
+    J_history = np.zeros(num_iters)
+
+    for i in range(num_iters):
+        dj_db, dj_dw = gradient_function(X, y, w, b, lambda_)
+
+        w -= alpha * dj_dw
+        b -= alpha * dj_db
+
+        cost = cost_function(X, y, w, b, lambda_)
+        J_history[i] = cost
+
     return w, b, J_history
 
 
@@ -170,5 +194,15 @@ def predict(X, w, b):
     p: (ndarray (m,1))
         The predictions for X using a threshold at 0.5
     """
+
+    m = X.shape[0]
+    p = np.zeros((m, 1))
+
+    # Calculate the probabilities using the logistic function
+    z = np.dot(X, w) + b
+    h = 1 / (1 + np.exp(-z))
+
+    # Apply the threshold at 0.5 to make predictions
+    p = (h >= 0.5).astype(int)
 
     return p

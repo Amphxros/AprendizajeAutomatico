@@ -15,7 +15,7 @@ def zscore_normalize_features(X):
       mu (ndarray (n,))     : mean of each feature
       sigma (ndarray (n,))  : standard deviation of each feature
     """
-     mu = np.mean(X, axis=0)  # Compute the mean of eachfeature
+    mu = np.mean(X, axis=0)  # Compute the mean of eachfeature
     sigma = np.std(X, axis=0)  # Compute the standard deviation of each feature
     X_norm = (X - mu) / sigma  # Z-score normalization
 
@@ -36,8 +36,8 @@ def compute_cost(X, y, w, b):
     """
     m = len(y)  # Number of examples
     y_pred = np.dot(X, w) + b  # Predicted values
-    cost = np.mean((y_pred - y) ** 2)  # M
-SE cos     return cost
+    cost = np.mean((y_pred - y) ** 2)  # MSE cost
+    return cost
 
 
 def compute_gradient(X, y, w, b):
