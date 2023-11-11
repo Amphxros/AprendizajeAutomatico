@@ -200,8 +200,7 @@ def predict(X, w, b):
 
     # Calculate the probabilities using the logistic function
     z = np.dot(X, w) + b
-    h = 1 / (1 + np.exp(-z))
-
+    h = sigmoid(z)
     # Apply the threshold at 0.5 to make predictions
     p = (h >= 0.5).astype(int)
 

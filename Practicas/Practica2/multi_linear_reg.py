@@ -57,7 +57,7 @@ def compute_gradient(X, y, w, b):
     error = y_pred - y  # Error between predicted and actual values
 
     dj_db = np.mean(error)  # Gradient of the cost w.r.t. parameter b
-    dj_dw = (1/m) * np.dot(X.T, error)  # Gradient of the cost w.r.t. parameters w
+    dj_dw = (1/m) * np.dot(zscore_normalize_features(X), error)  # Gradient of the cost w.r.t. parameters w
 
     return dj_db, dj_dw
 
