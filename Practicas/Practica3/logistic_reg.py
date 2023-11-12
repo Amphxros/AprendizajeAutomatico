@@ -87,7 +87,7 @@ def compute_cost_reg(X, y, w, b, lambda_=1):
     Returns:
       total_cost: (scalar)         cost 
     """
-     m = len(y)  # Number of training examples
+    m = len(y)  # Number of training examples
     
     # Compute the predictions
     z = np.dot(X, w) + b
@@ -120,7 +120,7 @@ def compute_gradient_reg(X, y, w, b, lambda_=1):
       dj_dw: (ndarray Shape (n,)) The gradient of the cost w.r.t. the parameters w. 
 
     """
-     m = len(y)  # Number of training examples
+    m = len(y)  # Number of training examples
     
     # Compute the predictions
     z = np.dot(X, w) + b
@@ -164,7 +164,7 @@ def gradient_descent(X, y, w_in, b_in, cost_function, gradient_function, alpha, 
 
     m, n = X.shape
     w = w_in.copy()
-    b = b_in.copy()
+    b = b_in
     J_history = np.zeros(num_iters)
 
     for i in range(num_iters):

@@ -1,13 +1,22 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+def load_data(data, limit):
+    data = np.loadtxt(data, delimiter=limit)
+    x = data[:,:2]
+    decision = data[:,2]
+    return x, decision
 
-def plot_data(X, y, pos_label="y=1", neg_label="y=0"):
+def plot_data(X, y, xlabel, ylabel, pos_label="y=1", neg_label="y=0"):
     positive = y == 1
     negative = y == 0
 
-    plt.plot(X[positive, 0], X[positive, 1], 'k+', label=pos_label)
-    plt.plot(X[negative, 0], X[negative, 1], 'yo', label=neg_label)
+    plt.plot(X[positive,0], X[positive,1], 'k+', label=pos_label)
+    plt.plot(X[negative,0], X[negative,1], 'yo', label=neg_label)
+    plt.legend(loc="upper right")
+
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
 
 
 def map_feature(X1, X2, degree=6):
@@ -30,7 +39,7 @@ def sig(z):
 def plot_decision_boundary(w, b, X, y):
     # Credit to dibgerge on Github for this plotting code
 
-    plot_data(X[:, 0:2], y)
+    plot_data(X[:, 0:2], y, "cocacola", "espuma")
 
     if X.shape[1] <= 2:
         plot_x = np.array([min(X[:, 0]), max(X[:, 0])])
