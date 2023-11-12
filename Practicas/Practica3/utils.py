@@ -39,7 +39,7 @@ def sig(z):
 def plot_decision_boundary(w, b, X, y):
     # Credit to dibgerge on Github for this plotting code
 
-    plot_data(X[:, 0:2], y, "cocacola", "espuma")
+    plot_data(X[:, 0:2], y, "X", "Y")
 
     if X.shape[1] <= 2:
         plot_x = np.array([min(X[:, 0]), max(X[:, 0])])
