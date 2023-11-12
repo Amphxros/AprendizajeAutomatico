@@ -87,20 +87,21 @@ def compute_cost_reg(X, y, w, b, lambda_=1):
     Returns:
       total_cost: (scalar)         cost 
     """
+     m = len(y)  # Number of training examples
     
-    m = len(y)  # Number of training examples
+    # Compute the predictions
     z = np.dot(X, w) + b
-    h = sigmoid(z)  # Sigmoid function
-
-    # Calculate the standard logistic regression cost
-    log_loss = -1 / m * np.sum(y * np.log(h) + (1 - y) * np.log(1 - h))
-
-    # Calculate the regularization term
-    regularization = (lambda_ / (2 * m)) * np.sum(w[1:]**2)  # Exclude the bias term (w0)
-
-    # Combine the two terms to get the total cost
-    total_cost = log_loss + regularization
-
+    y_pred = sigmoid(z)
+    
+    # Compute the cost function
+    cost = (-1 / m) * np.sum(y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred))
+    
+    # Compute the regularization term
+    reg_term = (lambda_ / (2 * m)) * np.sum(w**2)
+    
+    # Compute the total cost (sum of cost and regularization term)
+    total_cost = cost + reg_term
+    
     return total_cost
 
 
@@ -119,17 +120,18 @@ def compute_gradient_reg(X, y, w, b, lambda_=1):
       dj_dw: (ndarray Shape (n,)) The gradient of the cost w.r.t. the parameters w. 
 
     """
-    m = len(y)  # Number of training examples
+     m = len(y)  # Number of training examples
+    
+    # Compute the predictions
     z = np.dot(X, w) + b
-    h = sigmoid(z)  # Sigmoid function
-
-    # Calculate the gradient without regularization
-    dj_db = 1 / m * np.sum(h - y)
-    dj_dw = 1 / m * np.dot(X.T, (h - y))
-
-    # Add the regularization term (except for the bias term)
-    dj_dw[1:] += (lambda_ / m) * w[1:]
-
+    y_pred = sigmoid(z)
+    
+    # Compute the gradient with respect to b
+    dj_db = (1 / m) * np.sum(y_pred - y)
+    
+    # Compute the gradient with respect to w
+    dj_dw = (1 / m) * np.dot(X.T, y_pred - y) + (lambda_ / m) * w
+ 
     return dj_db, dj_dw
 
 
@@ -162,7 +164,7 @@ def gradient_descent(X, y, w_in, b_in, cost_function, gradient_function, alpha, 
 
     m, n = X.shape
     w = w_in.copy()
-    b = b_in
+    b = b_in.copy()
     J_history = np.zeros(num_iters)
 
     for i in range(num_iters):
