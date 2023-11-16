@@ -26,5 +26,5 @@ def predict(theta1, theta2, X):
 		Predictions vector containing the predicted label for each example.
 		It has a length equal to the number of examples.
 	"""
-
+    p=0
 	return p
