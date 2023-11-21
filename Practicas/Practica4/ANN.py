@@ -27,17 +27,19 @@ def predict(theta1, theta2, X):
         Predictions vector containing the predicted label for each example.
         It has a length equal to the number of examples.
     """
-    # Add a column of ones to X (bias term)
     m = X.shape[0]
     X1s = np.hstack([np.ones((m, 1)), X])
+
     # Calculate activations in the second layer
+    a2 = sigmoid(np.dot(X1s, theta1.T))
+
     # Add a column of ones to a2 (bias term)
-    a2 = np.hstack([np.ones((m, 1)),  sigmoid(np.dot(X1s, theta1.T))])
+    a2 = np.hstack([np.ones((m, 1)), a2])
 
     # Calculate activations in the output layer
     h = sigmoid(np.dot(a2, theta2.T))
-    
+
     # Find the index of the maximum value in each row (predicted label)
     p = np.argmax(h, axis=1)
-    p = p + 1  # Adjust for 1-based indexing (labels are 1 to 10)
-    return p
+
+    return p  # Adjust for 1-based indexing (labels are 1 to 10)
