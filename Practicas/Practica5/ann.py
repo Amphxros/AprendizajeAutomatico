@@ -1,194 +1,114 @@
 import numpy as np
 from sklearn.neural_network import MLPClassifier
 
-def cost(theta1, theta2, X, y, lambda_):
-	"""
-	Compute cost for 2-layer neural network. 
-
-	Parameters
-	----------
-	theta1 : array_like
-		Weights for the first layer in the neural network.
-		It has shape (2nd hidden layer size x input size + 1)
-
-	theta2: array_like
-		Weights for the second layer in the neural network. 
-		It has shape (output layer size x 2nd hidden layer size + 1)
-
-	X : array_like
-		The inputs having shape (number of examples x number of dimensions).
-
-	y : array_like
-		1-hot encoding of labels for the input, having shape 
-		(number of examples x number of labels).
-
-	lambda_ : float
-		The regularization parameter. 
-
-	Returns
-	-------
-	J : float
-		The computed value for the cost function. 
-
-	"""
-       """
-    Compute cost for 2-layer neural network.
-    
-    Parameters
-    ----------
-    theta1 : array_like
-        Pesos para la primera capa en la red neuronal.
-        Tiene forma (tamaño de la 2ª capa oculta x tamaño de la entrada + 1).
-    theta2 : array_like
-        Pesos para la segunda capa en la red neuronal.
-        Tiene forma (tamaño de la capa de salida x tamaño de la 2ª capa oculta + 1).
-    X : array_like
-        Las entradas con forma (número de ejemplos x número de dimensiones).
-    y : array_like
-        Codificación one-hot de las etiquetas para la entrada, con forma
-        (número de ejemplos x número de etiquetas).
-    lambda_ : float
-        El parámetro de regularización.
-    
-    Returns
-    -------
-    J : float
-        El valor calculado para la función de costo.
-    """
-    m = len(X)  # Número de ejemplos
-    
-    # Propagación hacia adelante
-    a1 = np.insert(X, 0, values=1, axis=1)  # Agregar sesgo a las entradas
-    z2 = a1.dot(theta1.T)
-    a2 = sigmoid(z2)
-    a2 = np.insert(a2, 0, values=1, axis=1)  # Agregar sesgo a la capa oculta
-    z3 = a2.dot(theta2.T)
-    h = sigmoid(z3)  # Salida de la red
-    
-    # Calcular el costo sin regularización
-    cost_unreg = (-1 / m) * np.sum(y * np.log(h) + (1 - y) * np.log(1 - h))
-    
-    # Calcular la regularización (ignorando los sesgos)
-    reg_term = (lambda_ / (2 * m)) * (np.sum(theta1[:, 1:]**2) + np.sum(theta2[:, 1:]**2))
-    
-    # Costo total con regularización
-    J = cost_unreg + reg_term
-	return J
-
-
-
-def backprop(theta1, theta2, X, y, lambda_):
-   """
-    Compute cost and gradient for 2-layer neural network.
-
-    Parameters
-    ----------
-    theta1 : array_like
-        Pesos para la primera capa en la red neuronal.
-        Tiene forma (tamaño de la 2ª capa oculta x tamaño de la entrada + 1).
-
-    theta2 : array_like
-        Pesos para la segunda capa en la red neuronal.
-        Tiene forma (tamaño de la capa de salida x tamaño de la 2ª capa oculta + 1).
-
-    X : array_like
-        Las entradas con forma (número de ejemplos x número de dimensiones).
-
-    y : array_like
-        Codificación one-hot de las etiquetas para la entrada, con forma
-        (número de ejemplos x número de etiquetas).
-
-    lambda_ : float
-        El parámetro de regularización.
-
-    Returns
-    -------
-    J : float
-        El valor calculado para la función de costo.
-
-    grad1 : array_like
-        Gradiente de la función de costo con respecto a los pesos
-        para la primera capa en la red neuronal, theta1.
-        Tiene forma (tamaño de la 2ª capa oculta x tamaño de la entrada + 1).
-
-    grad2 : array_like
-        Gradiente de la función de costo con respecto a los pesos
-        para la segunda capa en la red neuronal, theta2.
-        Tiene forma (tamaño de la capa de salida x tamaño de la 2ª capa oculta + 1).
-    """
-
-    m = len(X)  # Número de ejemplos
-
-    # Propagación hacia adelante
-    a1 = np.insert(X, 0, values=1, axis=1)  # Agregar sesgo a las entradas
-    z2 = a1.dot(theta1.T)
-    a2 = sigmoid(z2)
-    a2 = np.insert(a2, 0, values=1, axis=1)  # Agregar sesgo a la capa oculta
-    z3 = a2.dot(theta2.T)
-    h = sigmoid(z3)  # Salida de la red
-
-    # Calcular errores de la capa de salida
-    delta3 = h - y
-
-    # Calcular errores de la capa oculta
-    delta2 = (delta3.dot(theta2[:, 1:])) * sigmoid_gradient(z2)
-
-    # Acumular gradientes
-    Delta2 = delta3.T.dot(a2)
-    Delta1 = delta2.T.dot(a1)
-
-    # Calcular el costo sin regularización
-    cost_unreg = (-1 / m) * np.sum(y * np.log(h) + (1 - y) * np.log(1 - h))
-
-    # Calcular la regularización (ignorando los sesgos)
-    reg_term = (lambda_ / (2 * m)) * (np.sum(theta1[:, 1:]**2) + np.sum(theta2[:, 1:]**2))
-
-    # Costo total con regularización
-    J = cost_unreg + reg_term
-
-    # Calcular gradientes con regularización
-    grad1 = (1 / m) * Delta1 + (lambda_ / m) * np.hstack([np.zeros((theta1.shape[0], 1)), theta1[:, 1:]])
-    grad2 = (1 / m) * Delta2 + (lambda_ / m) * np.hstack([np.zeros((theta2.shape[0], 1)), theta2[:, 1:]])
-
-    return J, grad1, grad2
-
-## forward from the last exercise 
-
+def initialize_params(input_size, hidden_size, output_size):
+    epsilon_init = 0.12
+    theta1 = np.random.rand(hidden_size, input_size + 1) * 2 * epsilon_init - epsilon_init
+    theta2 = np.random.rand(output_size, hidden_size + 1) * 2 * epsilon_init - epsilon_init
+    return theta1, theta2
 def sigmoid(z):
-    return 1 / (1 + np.exp(-z))
+    return 1/(1 + np.exp(-z))
 
-def predict(theta1, theta2, X):
-    """
-    Predict the label of an input given a trained neural network.
-    Parameters
-    ----------
+def cost(theta1, theta2, X, y, lambda_):
+   """Compute cost for 2-layer neural network. Parameters
+   ----------
     theta1 : array_like
-        Weights for the first layer in the neural network.
-        It has shape (2nd hidden layer size x input size)
+    Weights for the first layer in the neural network.
+    It has shape (2nd hidden layer size x input size + 1)
     theta2: array_like
-        Weights for the second layer in the neural network.
-        It has shape (output layer size x 2nd hidden layer size)
+    Weights for the second layer in the neural network.
+    It has shape (output layer size x 2nd hidden layer size + 1)
     X : array_like
-        The image inputs having shape (number of examples x image dimensions).
-    Return
-    ------
-    p : array_like
-        Predictions vector containing the predicted label for each example.
-        It has a length equal to the number of examples.
+    The inputs having shape (number of examples x number of dimensions).
+    y : array_like
+    2
+    1-hot encoding of labels for the input, having shape
+    (number of examples x number of labels).
+    lambda_ : float
+    The regularization parameter.
+    Returns
+    -------
+    J : float
+    The computed value for the cost function.
     """
-    m = X.shape[0]
-    X1s = np.hstack([np.ones((m, 1)), X])
+    m = len(y)
+    ones = np.ones((m, 1))
+    a1 = np.hstack((ones, X))
+    z2 = np.dot(a1, theta1.T)
+    a2 = np.hstack((ones, sigmoid(z2)))
+    z3 = np.dot(a2, theta2.T)
+    h = sigmoid(z3)
+              
+    ## coste
+    J=(-1/m)* np.sum(y*np.log(h) + (1 - y) * np.log(1-h))
+    ## regularizacion
+    reg= (lambda_/(2*m))* np.sum(theta1[:,1:]**2) + np.sum(theta2[:,1:]) 
+    J=J+reg
+    return J
 
-    # Calculate activations in the second layer
-    a2 = sigmoid(np.dot(X1s, theta1.T))
 
-    # Add a column of ones to a2 (bias term)
-    a2 = np.hstack([np.ones((m, 1)), a2])
+def backdrop(theta1. theta2, X,y,lambda_):
+    m=len(y)
+    one=np.ones(m,1)
+    a1 = np.hstack((ones, X))
+    z2 = np.dot(a1, theta1.T)
+    a2 = np.hstack((ones, sigmoid(z2)))
+    z3 = np.dot(a2, theta2.T)
+    h = sigmoid(z3)
+    #cost
+    J=cost(theta1, theta2, X, y, lambda_)
+    # Compute gradients
+    grad1 = np.dot(delta2.T, a1) / m
+    grad2 = np.dot(delta3.T, a2) / m
 
-    # Calculate activations in the output layer
-    h = sigmoid(np.dot(a2, theta2.T))
+    # Regularization
+    grad1[:, 1:] += (lambda_ / m) * theta1[:, 1:]
+    grad2[:, 1:] += (lambda_ / m) * theta2[:, 1:]
+    # back
+    delta3=h-y
+    delta2=np.dot(delta3, theta2[:, 1:]) * sigmoid(z2) * (1 - sigmoid(z2))
+    
+    
+    return J, grad1, grad2
+def train_neural_network(X,y,input_size,hidden,output_size,lambda_,alpha,num_iterations):
+    m=X.shape()
+    one=np.ones(m,1)
+    # One-Hot Encoding
+    y_onehot = np.eye(output_size)[y.flatten() - 1]
+    # Initialize parameters
+    theta1, theta2 = initialize_params(input_size, hidden_size, output_size)
+    for i in range(num_iterations):
+         # Flatten parameters for optimization
+        params = np.concatenate((theta1.flatten(), theta2.flatten()))
+         # Define cost and gradient function for optimization
+        cost_func = lambda p: backprop(np.reshape(p[:hidden_size * (input_size + 1)], (hidden_size, input_size + 1)),
+                                       np.reshape(p[hidden_size * (input_size + 1):], (output_size, hidden_size + 1)),
+                                       X, y_onehot, lambda_)[0]
 
-    # Find the index of the maximum value in each row (predicted label)
-    p = np.argmax(h, axis=1)
+        grad_func = lambda p: np.concatenate((backprop(np.reshape(p[:hidden_size * (input_size + 1)], (hidden_size, input_size + 1)),
+                                                       np.reshape(p[hidden_size * (input_size + 1):], (output_size, hidden_size + 1)),
+                                                       X, y_onehot, lambda_)[1].flatten(),
+                                              backprop(np.reshape(p[:hidden_size * (input_size + 1)], (hidden_size, input_size + 1)),
+                                                       np.reshape(p[hidden_size * (input_size + 1):], (output_size, hidden_size + 1)),
+                                                       X, y_onehot, lambda_)[2].flatten()))
+    
+     # Use scipy's minimize function for optimization
+    result = minimize(fun=cost_func, x0=params, jac=grad_func, method='TNC', options={'maxiter': 100, 'disp': True})
 
-    return p  # Adjust for 1-based indexing (labels are 1 to 10)
+    # Reshape optimized parameters back to matrices
+    theta1 = np.reshape(result.x[:hidden_size * (input_size + 1)], (hidden_size, input_size + 1))
+    theta2 = np.reshape(result.x[hidden_size * (input_size + 1):], (output_size, hidden_size + 1))
+
+    return theta1, theta2
+    
+def predict(theta1, theta2, X):
+    m = len(X)
+    ones = np.ones((m, 1))
+    a1 = np.hstack((ones, X))
+    z2 = np.dot(a1, theta1.T)
+    a2 = np.hstack((ones, sigmoid(z2)))
+    z3 = np.dot(a2, theta2.T)
+    h = sigmoid(z3)
+
+    # Return the index (starting from 1) of the maximum value in each row
+    return np.argmax(h, axis=1) + 1
