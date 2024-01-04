@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class MLPParameters
 {
-    List<float[,]> coeficients;
-    List<float[]> intercepts;
+    public List<float[,]> coeficients;
+    public List<float[]> intercepts;
 
     public MLPParameters(int numLayers)
     {
@@ -42,6 +42,11 @@ public class MLPParameters
     {
         intercepts[i][row] = v;
     }
+
+    public int getCoefficientsCount()
+    {
+        return coeficients.Count;
+    }
 }
 
 public class MLPModel
@@ -67,7 +72,18 @@ public class MLPModel
         //TODO: implement feedworward.
         //the size of the output layer depends on what actions you have performed in the game.
         //By default it is 7 (number of possible actions) but some actions may not have been performed and therefore the model has assumed that they do not exist.
-        return new float[7];
+        float[] output = new float[input.Length];
+        // Realizar la propagación hacia adelante
+        for (int i = 0; i < mlpParameters.getCoefficientsCount(); i++)
+        {
+            float[,] coef = mlpParameters.coeficients[i];
+            float[] intercept = mlpParameters.intercepts[i];
+
+            // Aplicar la función de activación (por ejemplo, sigmoide)
+            output = ApplyActivationFunction(MatrixMultiply(output, coef), intercept);
+        }
+
+        return output;
     }
 
     /// <summary>
@@ -104,6 +120,44 @@ public class MLPModel
             }
         }
         return index;
+    }
+
+    private float[] ApplyActivationFunction(float[] input, float[] intercept)
+    {
+        // Implementa aquí tu función de activación (por ejemplo, sigmoide)
+        // Puedes usar la función Mathf.Clamp01 para limitar los valores entre 0 y 1
+        float[] result = new float[input.Length];
+        for (int i = 0; i < input.Length; i++)
+        {
+            result[i] = Mathf.Clamp01(Sigmoid(input[i] + intercept[i]));
+        }
+        return result;
+    }
+
+    private float[] MatrixMultiply(float[] input, float[,] matrix)
+    {
+        // Multiplicación de matriz por vector
+        int rows = matrix.GetLength(0);
+        int cols = matrix.GetLength(1);
+        float[] result = new float[rows];
+
+        for (int i = 0; i < rows; i++)
+        {
+            float sum = 0;
+            for (int j = 0; j < cols; j++)
+            {
+                sum += input[j] * matrix[i, j];
+            }
+            result[i] = sum;
+        }
+
+        return result;
+    }
+
+    private float Sigmoid(float x)
+    {
+        // Función sigmoide
+        return 1 / (1 + Mathf.Exp(-x));
     }
 }
 
