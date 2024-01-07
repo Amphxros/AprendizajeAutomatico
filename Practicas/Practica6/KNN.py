@@ -27,3 +27,4 @@ def KNN(x,y):
     plt.title('Confusion Matrix')
     plt.show()
     print(f'Accuracy: {accuracy * 100:.2f}%')
+    return y_pred
