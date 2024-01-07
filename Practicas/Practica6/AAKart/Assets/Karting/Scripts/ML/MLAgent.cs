@@ -73,13 +73,13 @@ public class MLPModel
         //the size of the output layer depends on what actions you have performed in the game.
         //By default it is 7 (number of possible actions) but some actions may not have been performed and therefore the model has assumed that they do not exist.
         float[] output = new float[input.Length];
-        // Realizar la propagación hacia adelante
+        // Realizar la propagaciï¿½n hacia adelante
         for (int i = 0; i < mlpParameters.getCoefficientsCount(); i++)
         {
             float[,] coef = mlpParameters.coeficients[i];
             float[] intercept = mlpParameters.intercepts[i];
 
-            // Aplicar la función de activación (por ejemplo, sigmoide)
+            // Aplicar la funciï¿½n de activaciï¿½n (por ejemplo, sigmoide)
             output = ApplyActivationFunction(MatrixMultiply(output, coef), intercept);
         }
 
@@ -124,8 +124,8 @@ public class MLPModel
 
     private float[] ApplyActivationFunction(float[] input, float[] intercept)
     {
-        // Implementa aquí tu función de activación (por ejemplo, sigmoide)
-        // Puedes usar la función Mathf.Clamp01 para limitar los valores entre 0 y 1
+        // Implementa aquï¿½ tu funciï¿½n de activaciï¿½n (por ejemplo, sigmoide)
+        // Puedes usar la funciï¿½n Mathf.Clamp01 para limitar los valores entre 0 y 1
         float[] result = new float[input.Length];
         for (int i = 0; i < input.Length; i++)
         {
@@ -136,7 +136,7 @@ public class MLPModel
 
     private float[] MatrixMultiply(float[] input, float[,] matrix)
     {
-        // Multiplicación de matriz por vector
+        // Multiplicaciï¿½n de matriz por vector
         int rows = matrix.GetLength(0);
         int cols = matrix.GetLength(1);
         float[] result = new float[rows];
@@ -156,14 +156,14 @@ public class MLPModel
 
     private float Sigmoid(float x)
     {
-        // Función sigmoide
+        // Funciï¿½n sigmoide
         return 1 / (1 + Mathf.Exp(-x));
     }
 }
 
 public class MLAgent : MonoBehaviour
 {
-    public enum ModelType { MLP=0 }
+    public enum ModelType { MLP=0, KNN=1 }
     public TextAsset text;
     public ModelType model;
     public bool agentEnable;
