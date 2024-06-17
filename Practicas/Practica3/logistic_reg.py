@@ -14,6 +14,9 @@ def sigmoid(z):
         g (ndarray): sigmoid(z), with the same shape as z
 
     """
+    
+    #z = np.array(z)
+    
     g = 1 / (1 + np.exp(-z))
 
     return g
@@ -39,8 +42,9 @@ def compute_cost(X, y, w, b, lambda_=None):
     z = np.dot(X, w) + b
     h = sigmoid(z)  # Sigmoid function
 
+    #print(h.shape, y.shape)
     # Calculate the cost
-    total_cost = -1 / m * np.sum(y * np.log(h) + (1 - y) * np.log(1 - h))
+    total_cost = (1 / m) * np.sum(-y * np.log(h) - ((1 - y) * np.log(1 - h)))
 
     return total_cost
 
@@ -65,8 +69,8 @@ def compute_gradient(X, y, w, b, lambda_=None):
     h = sigmoid(z)  # Sigmoid function
 
     # Calculate the gradients
-    dj_db = 1 / m * np.sum(h - y)
-    dj_dw = 1 / m * np.dot(X.T, (h - y))
+    dj_db = (1 / m) * np.sum(h - y)
+    dj_dw = (1 / m) * np.dot(X.T, (h - y))
 
 
     return dj_db, dj_dw
@@ -87,21 +91,20 @@ def compute_cost_reg(X, y, w, b, lambda_=1):
     Returns:
       total_cost: (scalar)         cost 
     """
+    
     m = len(y)  # Number of training examples
-    
-    # Compute the predictions
     z = np.dot(X, w) + b
-    y_pred = sigmoid(z)
-    
-    # Compute the cost function
-    cost = (-1 / m) * np.sum(y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred))
-    
-    # Compute the regularization term
-    reg_term = (lambda_ / (2 * m)) * np.sum(w**2)
-    
-    # Compute the total cost (sum of cost and regularization term)
-    total_cost = cost + reg_term
-    
+    h = sigmoid(z)  # Sigmoid function
+
+    # Calculate the standard logistic regression cost
+    log_loss = (1 / m) * np.sum(-y * np.log(h) - (1 - y) * np.log(1 - h))
+
+    # Calculate the regularization term
+    regularization = (lambda_ / (2 * m)) * np.sum(w**2)  # Exclude the bias term (w0)
+
+    # Combine the two terms to get the total cost
+    total_cost = log_loss + regularization
+
     return total_cost
 
 
@@ -121,17 +124,16 @@ def compute_gradient_reg(X, y, w, b, lambda_=1):
 
     """
     m = len(y)  # Number of training examples
-    
-    # Compute the predictions
     z = np.dot(X, w) + b
-    y_pred = sigmoid(z)
-    
-    # Compute the gradient with respect to b
-    dj_db = (1 / m) * np.sum(y_pred - y)
-    
-    # Compute the gradient with respect to w
-    dj_dw = (1 / m) * np.dot(X.T, y_pred - y) + (lambda_ / m) * w
- 
+    h = sigmoid(z)  # Sigmoid function
+
+    # Calculate the gradient without regularization
+    dj_db = 1 / m * np.sum(h - y)
+    dj_dw = 1 / m * np.dot(X.T, (h - y))
+
+    # Add the regularization term (except for the bias term)
+    dj_dw += (lambda_ / m) * w
+
     return dj_db, dj_dw
 
 
@@ -162,19 +164,18 @@ def gradient_descent(X, y, w_in, b_in, cost_function, gradient_function, alpha, 
           primarily for graphing later
     """
 
-    m, n = X.shape
-    w = w_in.copy()
+    w = w_in
     b = b_in
     J_history = np.zeros(num_iters)
 
     for i in range(num_iters):
+        J_history[i] = cost_function(X, y, w, b, lambda_)
+        
         dj_db, dj_dw = gradient_function(X, y, w, b, lambda_)
 
-        w -= alpha * dj_dw
-        b -= alpha * dj_db
+        w = w - alpha * dj_dw
+        b = b - alpha * dj_db
 
-        cost = cost_function(X, y, w, b, lambda_)
-        J_history[i] = cost
 
     return w, b, J_history
 

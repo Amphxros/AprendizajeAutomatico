@@ -3,6 +3,13 @@ import matplotlib.pyplot as plt
 
 def load_data(data, limit):
     data = np.loadtxt(data, delimiter=limit)
+    x = data[:,:-1]
+    decision = data[:,-1]
+    return x, decision
+
+
+def load_data2(data, limit):
+    data = np.loadtxt(data, delimiter=limit)
     x = data[:,:2]
     decision = data[:,2]
     return x, decision
@@ -39,7 +46,7 @@ def sig(z):
 def plot_decision_boundary(w, b, X, y):
     # Credit to dibgerge on Github for this plotting code
 
-    plot_data(X[:, 0:2], y, "X", "Y")
+    plot_data(X[:, 0:2], y, "cocacola", "espuma")
 
     if X.shape[1] <= 2:
         plot_x = np.array([min(X[:, 0]), max(X[:, 0])])
